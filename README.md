@@ -23,6 +23,30 @@ You can view my interactive portfolio here:
 This assignment includes text analysis and data visualisation carried out in R.
 
 # This is assignment 1 (How family advantage and Maternal IQ shape children's test scores)
+
+```{r}
+ggplot(kidiq_2, aes(x = mom_age)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 binwidth = 2,
+                 fill = "#2C7FB8",
+                 colour = "white",
+                 alpha = 0.8) +
+  geom_density(colour = "#08306B", linewidth = 1.2) +
+  geom_vline(aes(xintercept = mean(mom_age, na.rm = TRUE)),
+             colour = "red",
+             linetype = "dashed",
+             linewidth = 1) +
+  labs(
+    title = "Distribution of Mothers' Ages",
+    subtitle = "Histogram with density curve and mean age",
+    x = "Mother's Age",
+    y = "Density",
+    caption = "Source: kidiq dataset"
+  ) +
+  theme_minimal(base_size = 14)
+```
+https://arisarasuksawang-ui.github.io/gv300-website/profile_files/figure-html5/unnamed-chunk-1-1.png
+
 ```{r} 
 your_plot <- kidiq %>%
   filter(!is.na(family_advantage),
@@ -153,7 +177,48 @@ https://34de43ac144c4f43b2dc18abdc6d286a.app.posit.cloud/chunk_output/s/F7587C21
 
 ---
 ## Assignment 2
-### Visualisation (Distribution of constituencies by turnout category)
+### Visualisation (democracy, voting, and representation appear most frequently)
+```{r}
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+
+text <- data.frame(
+  line = 1:3,
+  text = c(
+    "Democracy depends on participation and representation.",
+    "Voting turnout and political engagement are central to democratic politics.",
+    "Representation, democracy and voting are key themes in political analysis."
+  )
+)
+
+words <- text %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words)
+
+word_counts <- words %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 10)
+
+
+ggplot(word_counts, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "#2C7FB8", width = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Most frequent political terms",
+    subtitle = "Word frequency after removing common stop words",
+    x = "",
+    y = "Frequency"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 11, colour = "grey40"),
+    panel.grid.major.y = element_blank()
+  )
+```
+## Visualisation (Distribution of constituencies by turnout category)
+
 ```{r cats-plot, eval=TRUE}
 ggplot(category_counts, aes(x = category, y = count, fill = country)) +
   geom_col(position = "dodge") +
